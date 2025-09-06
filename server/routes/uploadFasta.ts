@@ -4,7 +4,10 @@ import references from "../data/references";
 
 function parseFasta(text: string) {
   const records: { id: string; seq: string }[] = [];
-  const parts = text.split(/>+/).map((p) => p.trim()).filter(Boolean);
+  const parts = text
+    .split(/>+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
   for (const part of parts) {
     const lines = part.split(/\r?\n/);
     const id = lines[0].split(/\s+/)[0];
@@ -15,7 +18,8 @@ function parseFasta(text: string) {
 }
 
 function compareSequences(ref: string, seq: string) {
-  const mutations: { pos: number; ref: string; alt: string; type: string }[] = [];
+  const mutations: { pos: number; ref: string; alt: string; type: string }[] =
+    [];
   const minLen = Math.min(ref.length, seq.length);
   for (let i = 0; i < minLen; i++) {
     const r = ref[i];
@@ -26,9 +30,19 @@ function compareSequences(ref: string, seq: string) {
   }
   if (seq.length > ref.length) {
     // simple insertion record
-    mutations.push({ pos: ref.length + 1, ref: "-", alt: seq.slice(ref.length), type: "INS" });
+    mutations.push({
+      pos: ref.length + 1,
+      ref: "-",
+      alt: seq.slice(ref.length),
+      type: "INS",
+    });
   } else if (ref.length > seq.length) {
-    mutations.push({ pos: seq.length + 1, ref: ref.slice(seq.length), alt: "-", type: "DEL" });
+    mutations.push({
+      pos: seq.length + 1,
+      ref: ref.slice(seq.length),
+      alt: "-",
+      type: "DEL",
+    });
   }
   return mutations;
 }

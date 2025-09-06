@@ -19,14 +19,14 @@ python train.py --dry-run
 
 python train.py
 
-DVC
----
+## DVC
+
 This skeleton includes a simple `dvc.yaml` describing preprocess and train stages. You can run `dvc repro` after installing DVC.
 
-MLflow
-------
+## MLflow
+
 Run `mlflow ui --backend-store-uri ./mlruns` to open the MLflow tracking UI.
 
-Colab
------
+## Colab
+
 A Colab notebook `colab.ipynb` is included with step-by-step instructions to run this project on Google Colab and mount Google Drive for data storage.

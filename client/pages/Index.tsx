@@ -1,6 +1,16 @@
 import { useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ActivitySquare, ArrowRight, Beaker, Brain, ChartLine, Clock, FileUp, ShieldCheck, Sparkles } from "lucide-react";
+import {
+  ActivitySquare,
+  ArrowRight,
+  Beaker,
+  Brain,
+  ChartLine,
+  Clock,
+  FileUp,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import { MutationFrequencyChart } from "@/components/charts/MutationFrequencyChart";
 import { VariantDistributionChart } from "@/components/charts/VariantDistributionChart";
 import { ForecastChart } from "@/components/charts/ForecastChart";
@@ -11,10 +21,11 @@ const pathogens = [
   { key: "MRSA", color: "#7c3aed" },
 ] as const;
 
-type PathogenKey = typeof pathogens[number]["key"];
+type PathogenKey = (typeof pathogens)[number]["key"];
 
 function useDemoData(selected: PathogenKey) {
-  const seed = selected === "SARS-CoV-2" ? 3 : selected === "Influenza" ? 7 : 10;
+  const seed =
+    selected === "SARS-CoV-2" ? 3 : selected === "Influenza" ? 7 : 10;
   const series = Array.from({ length: 20 }, (_, i) => ({
     date: new Date(Date.now() - (19 - i) * 86400000).toISOString().slice(0, 10),
     frequency: Math.max(0, Math.sin((i + seed) / 3) * 0.3 + i * 0.02 + 0.35),
@@ -36,7 +47,10 @@ export default function Index() {
   const [fileName, setFileName] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
-  const { series, bars, forecast } = useMemo(() => useDemoData(selected), [selected]);
+  const { series, bars, forecast } = useMemo(
+    () => useDemoData(selected),
+    [selected],
+  );
   const color = pathogens.find((p) => p.key === selected)?.color ?? "#2563eb";
 
   return (
@@ -47,13 +61,15 @@ export default function Index() {
         <div className="container relative grid gap-8 py-16 md:grid-cols-2 md:gap-12 md:py-24">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs text-muted-foreground">
-              <Sparkles className="h-3.5 w-3.5 text-primary" /> Multi-pathogen AI surveillance
+              <Sparkles className="h-3.5 w-3.5 text-primary" /> Multi-pathogen
+              AI surveillance
             </div>
             <h1 className="mt-4 text-4xl font-extrabold leading-tight tracking-tight md:text-5xl">
               Predict pathogen evolution before it spreads
             </h1>
             <p className="mt-4 text-lg text-muted-foreground">
-              Detect mutations in near real-time, classify emerging variants, and forecast growth to power proactive public health decisions.
+              Detect mutations in near real-time, classify emerging variants,
+              and forecast growth to power proactive public health decisions.
             </p>
             <div className="mt-6 flex flex-wrap gap-3" id="upload">
               <input
@@ -67,7 +83,11 @@ export default function Index() {
                   if (!f) return;
                   try {
                     const text = await f.text();
-                    const payload = { filename: f.name, content: text, pathogen: selected };
+                    const payload = {
+                      filename: f.name,
+                      content: text,
+                      pathogen: selected,
+                    };
                     const res = await fetch("/api/upload-fasta", {
                       method: "POST",
                       headers: { "Content-Type": "application/json" },
@@ -76,9 +96,13 @@ export default function Index() {
                     const data = await res.json();
                     // Show basic results
                     if (res.ok) {
-                      alert(`Uploaded ${data.filename} — ${data.summary.sequences} sequences, ${data.summary.total_mutations} mutations detected`);
+                      alert(
+                        `Uploaded ${data.filename} — ${data.summary.sequences} sequences, ${data.summary.total_mutations} mutations detected`,
+                      );
                     } else {
-                      alert(`Upload failed: ${data.error || JSON.stringify(data)}`);
+                      alert(
+                        `Upload failed: ${data.error || JSON.stringify(data)}`,
+                      );
                     }
                   } catch (err) {
                     console.error(err);
@@ -86,7 +110,10 @@ export default function Index() {
                   }
                 }}
               />
-              <Button onClick={() => fileRef.current?.click()} className="gap-2">
+              <Button
+                onClick={() => fileRef.current?.click()}
+                className="gap-2"
+              >
                 <FileUp className="h-4 w-4" /> Upload FASTA
               </Button>
               <Button asChild variant="outline" className="gap-2">
@@ -95,12 +122,18 @@ export default function Index() {
                 </a>
               </Button>
               {fileName && (
-                <span className="inline-flex items-center text-sm text-muted-foreground">Selected: {fileName}</span>
+                <span className="inline-flex items-center text-sm text-muted-foreground">
+                  Selected: {fileName}
+                </span>
               )}
             </div>
             <div className="mt-6 flex items-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2"><Clock className="h-4 w-4" /> Near real-time ingestion</div>
-              <div className="flex items-center gap-2"><ShieldCheck className="h-4 w-4" /> Secure & collaborative</div>
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4" /> Near real-time ingestion
+              </div>
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4" /> Secure & collaborative
+              </div>
             </div>
           </div>
           <div className="rounded-xl border bg-card p-4 shadow-sm">
@@ -108,7 +141,12 @@ export default function Index() {
               <p className="text-sm font-medium">Quick Preview</p>
               <div className="flex gap-2">
                 {pathogens.map((p) => (
-                  <Button key={p.key} size="sm" variant={p.key === selected ? "default" : "outline"} onClick={() => setSelected(p.key)}>
+                  <Button
+                    key={p.key}
+                    size="sm"
+                    variant={p.key === selected ? "default" : "outline"}
+                    onClick={() => setSelected(p.key)}
+                  >
                     {p.key}
                   </Button>
                 ))}
@@ -123,7 +161,9 @@ export default function Index() {
             </div>
             <div className="mt-3 text-right">
               <Button asChild variant="ghost" className="gap-2">
-                <a href="/dashboard">Open full dashboard <ArrowRight className="h-4 w-4" /></a>
+                <a href="/dashboard">
+                  Open full dashboard <ArrowRight className="h-4 w-4" />
+                </a>
               </Button>
             </div>
           </div>
@@ -134,27 +174,53 @@ export default function Index() {
       <section id="impact" className="container py-14 md:py-20">
         <div className="grid gap-10 md:grid-cols-3">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Why it matters</h2>
+            <h2 className="text-2xl font-bold tracking-tight">
+              Why it matters
+            </h2>
             <p className="mt-2 text-muted-foreground">
-              Pathogens like SARS-CoV-2, Influenza, and antibiotic-resistant bacteria mutate rapidly—changing transmissibility, virulence, and treatment resistance.
+              Pathogens like SARS-CoV-2, Influenza, and antibiotic-resistant
+              bacteria mutate rapidly—changing transmissibility, virulence, and
+              treatment resistance.
             </p>
           </div>
           <ul className="grid gap-4 md:col-span-2 md:grid-cols-2">
             <li className="rounded-xl border p-4">
-              <div className="flex items-center gap-2 font-medium"><Clock className="h-4 w-4 text-primary" /> Traditional methods are too slow</div>
-              <p className="mt-1 text-sm text-muted-foreground">Manual sequencing + phylogenetics can take days or weeks, delaying response.</p>
+              <div className="flex items-center gap-2 font-medium">
+                <Clock className="h-4 w-4 text-primary" /> Traditional methods
+                are too slow
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Manual sequencing + phylogenetics can take days or weeks,
+                delaying response.
+              </p>
             </li>
             <li className="rounded-xl border p-4">
-              <div className="flex items-center gap-2 font-medium"><ActivitySquare className="h-4 w-4 text-primary" /> Limited predictive power</div>
-              <p className="mt-1 text-sm text-muted-foreground">Existing tools describe current variants but don’t forecast future trends.</p>
+              <div className="flex items-center gap-2 font-medium">
+                <ActivitySquare className="h-4 w-4 text-primary" /> Limited
+                predictive power
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Existing tools describe current variants but don’t forecast
+                future trends.
+              </p>
             </li>
             <li className="rounded-xl border p-4">
-              <div className="flex items-center gap-2 font-medium"><Beaker className="h-4 w-4 text-primary" /> Fragmented systems</div>
-              <p className="mt-1 text-sm text-muted-foreground">Pathogen-specific workflows hinder a unified response across viruses and bacteria.</p>
+              <div className="flex items-center gap-2 font-medium">
+                <Beaker className="h-4 w-4 text-primary" /> Fragmented systems
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Pathogen-specific workflows hinder a unified response across
+                viruses and bacteria.
+              </p>
             </li>
             <li className="rounded-xl border p-4">
-              <div className="flex items-center gap-2 font-medium"><ShieldCheck className="h-4 w-4 text-primary" /> Expected impact</div>
-              <p className="mt-1 text-sm text-muted-foreground">Faster detection, early warnings, and better resource allocation across regions.</p>
+              <div className="flex items-center gap-2 font-medium">
+                <ShieldCheck className="h-4 w-4 text-primary" /> Expected impact
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Faster detection, early warnings, and better resource allocation
+                across regions.
+              </p>
             </li>
           </ul>
         </div>
@@ -163,26 +229,47 @@ export default function Index() {
       {/* Pipeline */}
       <section id="pipeline" className="border-y bg-muted/30">
         <div className="container py-14 md:py-20">
-          <h2 className="text-center text-2xl font-bold tracking-tight">ML-powered pipeline</h2>
+          <h2 className="text-center text-2xl font-bold tracking-tight">
+            ML-powered pipeline
+          </h2>
           <p className="mx-auto mt-2 max-w-2xl text-center text-muted-foreground">
-            Automated genomic processing, mutation/variant detection, AI forecasting, and interactive dashboards—scalable and collaborative.
+            Automated genomic processing, mutation/variant detection, AI
+            forecasting, and interactive dashboards—scalable and collaborative.
           </p>
           <div className="mt-8 grid gap-4 md:grid-cols-4">
             <div className="rounded-xl border bg-card p-4">
-              <p className="text-sm font-semibold">1. Automated Genomic Processing</p>
-              <p className="mt-1 text-sm text-muted-foreground">Ingest FASTA, detect SNPs/indels vs references, enrich with date/location metadata.</p>
+              <p className="text-sm font-semibold">
+                1. Automated Genomic Processing
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Ingest FASTA, detect SNPs/indels vs references, enrich with
+                date/location metadata.
+              </p>
             </div>
             <div className="rounded-xl border bg-card p-4">
-              <p className="text-sm font-semibold">2. Mutation & Variant Detection</p>
-              <p className="mt-1 text-sm text-muted-foreground">Classify VOC/VOI; surface novel variants when signatures deviate significantly.</p>
+              <p className="text-sm font-semibold">
+                2. Mutation & Variant Detection
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Classify VOC/VOI; surface novel variants when signatures deviate
+                significantly.
+              </p>
             </div>
             <div className="rounded-xl border bg-card p-4">
               <p className="text-sm font-semibold">3. AI-Driven Prediction</p>
-              <p className="mt-1 text-sm text-muted-foreground">ARIMA/LSTM trends; XGBoost risk scoring; link mutations to drug targets.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                ARIMA/LSTM trends; XGBoost risk scoring; link mutations to drug
+                targets.
+              </p>
             </div>
             <div className="rounded-xl border bg-card p-4">
-              <p className="text-sm font-semibold">4. Interactive Visualization</p>
-              <p className="mt-1 text-sm text-muted-foreground">Dashboards for mutation frequency, regional spread, and forecasted growth.</p>
+              <p className="text-sm font-semibold">
+                4. Interactive Visualization
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Dashboards for mutation frequency, regional spread, and
+                forecasted growth.
+              </p>
             </div>
           </div>
         </div>
@@ -192,12 +279,22 @@ export default function Index() {
       <section id="visuals" className="container py-14 md:py-20">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight">Interactive visualization</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Explore mutation frequency, regional distribution, and near-term forecasts by pathogen.</p>
+            <h2 className="text-2xl font-bold tracking-tight">
+              Interactive visualization
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Explore mutation frequency, regional distribution, and near-term
+              forecasts by pathogen.
+            </p>
           </div>
           <div className="flex gap-2">
             {pathogens.map((p) => (
-              <Button key={p.key} size="sm" variant={p.key === selected ? "default" : "outline"} onClick={() => setSelected(p.key)}>
+              <Button
+                key={p.key}
+                size="sm"
+                variant={p.key === selected ? "default" : "outline"}
+                onClick={() => setSelected(p.key)}
+              >
                 {p.key}
               </Button>
             ))}
