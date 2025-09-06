@@ -1,0 +1,15 @@
+stages:
+  preprocess:
+    cmd: python train.py --preprocess data/sample_sequences.fasta data/processed.csv
+    deps:
+      - train.py
+      - data/sample_sequences.fasta
+    outs:
+      - data/processed.csv
+  train:
+    cmd: python train.py --train data/processed.csv models/model.joblib
+    deps:
+      - train.py
+      - data/processed.csv
+    outs:
+      - models/model.joblib
