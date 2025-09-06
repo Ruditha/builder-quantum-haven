@@ -61,9 +61,29 @@ export default function Index() {
                 type="file"
                 accept=".fasta,.fa,.fna,.txt"
                 className="hidden"
-                onChange={(e) => {
+                onChange={async (e) => {
                   const f = e.target.files?.[0];
                   setFileName(f ? f.name : null);
+                  if (!f) return;
+                  try {
+                    const text = await f.text();
+                    const payload = { filename: f.name, content: text, pathogen: selected };
+                    const res = await fetch("/api/upload-fasta", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(payload),
+                    });
+                    const data = await res.json();
+                    // Show basic results
+                    if (res.ok) {
+                      alert(`Uploaded ${data.filename} — ${data.summary.sequences} sequences, ${data.summary.total_mutations} mutations detected`);
+                    } else {
+                      alert(`Upload failed: ${data.error || JSON.stringify(data)}`);
+                    }
+                  } catch (err) {
+                    console.error(err);
+                    alert("Failed to upload FASTA file");
+                  }
                 }}
               />
               <Button onClick={() => fileRef.current?.click()} className="gap-2">
